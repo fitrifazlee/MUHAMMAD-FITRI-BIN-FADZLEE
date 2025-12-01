@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIL - Field Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-magnet"></i> Relativity Interactive Lab</h1>
+            <div class="subtitle">Field Visualizer - Electric & Magnetic Field Simulations</div>
+            
+            <div class="nav">
+                <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+                <a href="spacetime.html" class="nav-btn"><i class="fas fa-project-diagram"></i> Spacetime</a>
+                <a href="lorentz.html" class="nav-btn"><i class="fas fa-exchange-alt"></i> Lorentz</a>
+                <a href="fields.html" class="nav-btn active"><i class="fas fa-magnet"></i> Fields</a>
+                <a href="quiz.html" class="nav-btn"><i class="fas fa-question-circle"></i> Quiz</a>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <h2 class="panel-title"><i class="fas fa-bolt"></i> Field Visualization Canvas</h2>
+                <div id="fieldCanvas" style="text-align: center; margin: 20px 0;"></div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i> Play/Pause
+                    </button>
+                    <button class="btn" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button class="btn" id="snapshotBtn">
+                        <i class="fas fa-camera"></i> Take Snapshot
+                    </button>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Controls</h2>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-cube"></i> Scenario Selection</h3>
+                    <select id="scenarioSelect" class="coord-input">
+                        <option value="stationary">Stationary Point Charge</option>
+                        <option value="moving">Moving Charge (Constant Velocity)</option>
+                        <option value="twoCharges">Two Charges (Same/Different)</option>
+                        <option value="wire">Current-Carrying Wire</option>
+                        <option value="dipole">Electric Dipole</option>
+                        <option value="accelerating">Accelerating Charge</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-cog"></i> Charge Properties</h3>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Charge (q)</label>
+                        <input type="range" id="chargeSlider" min="-2" max="2" step="0.1" value="1">
+                        <div class="slider-label">
+                            <span>-2e</span>
+                            <span id="chargeValue">+1.0e</span>
+                            <span>+2e</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Velocity (v/c)</label>
+                        <input type="range" id="velocitySlider" min="0" max="0.99" step="0.01" value="0">
+                        <div class="slider-label">
+                            <span>0c</span>
+                            <span id="velocityValue">0.00c</span>
+                            <span>0.99c</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Position (x, y)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="posX" class="coord-input" value="0" step="0.1" style="flex: 1;">
+                            <input type="number" id="posY" class="coord-input" value="0" step="0.1" style="flex: 1;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-eye"></i> Display Options</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showElectric" checked>
+                            <span>Electric Field (E)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showMagnetic" checked>
+                            <span>Magnetic Field (B)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showFieldVectors">
+                            <span>Field Vectors</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showEquipotentials">
+                            <span>Equipotential Lines</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showGrid" checked>
+                            <span>Grid</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-tachometer-alt"></i> Field Strength</h3>
+                    <div class="input-group">
+                        <label class="input-label">Field Scale</label>
+                        <input type="range" id="fieldScaleSlider" min="1" max="10" step="1" value="5">
+                        <div class="slider-label">
+                            <span>Low</span>
+                            <span>Medium</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Number of Field Lines</label>
+                        <input type="range" id="fieldLinesSlider" min="10" max="50" step="5" value="20">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2 class="panel-title"><i class="fas fa-info-circle"></i> Field Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Electric Field Strength</div>
+                    <div class="info-value" id="eFieldValue">0.00 N/C</div>
+                    <div class="formula" style="font-size: 0.9em;">
+                        E = kq/r² (stationary)<br>
+                        E' = γ(E + v × B) (moving)
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Magnetic Field Strength</div>
+                    <div class="info-value" id="bFieldValue">0.00 T</div>
+                    <div class="formula" style="font-size: 0.9em;">
+                        B = (μ₀/4π) q(v × r̂)/r²<br>
+                        B' = γ(B - v × E/c²)
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Lorentz Factor</div>
+                    <div class="info-value" id="gammaValue">1.00</div>
+                    <div class="formula" style="font-size: 0.9em;">
+                        γ = 1/√(1 - v²/c²)<br>
+                        Shows relativistic effects
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Field Transformation</div>
+                    <div class="formula" style="font-size: 0.8em;">
+                        E∥' = E∥<br>
+                        E⟂' = γ(E⟂ + v × B)<br>
+                        B∥' = B∥<br>
+                        B⟂' = γ(B⟂ - v × E/c²)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group" style="margin-top: 30px;">
+                <h3><i class="fas fa-history"></i> Field Equations</h3>
+                <div class="formula">
+                    Maxwell's Equations in Vacuum:<br>
+                    ∇·E = ρ/ε₀ ∇·B = 0<br>
+                    ∇×E = -∂B/∂t ∇×B = μ₀J + μ₀ε₀∂E/∂t
+                </div>
+                <div class="formula" style="margin-top: 15px;">
+                    Lorentz Force Law:<br>
+                    F = q(E + v × B)
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><i class="fas fa-magnet"></i> Field Visualizer Module | Part of Relativity Interactive Lab</p>
+            <p style="margin-top: 10px;">Visualize electromagnetic fields for moving charges with relativistic transformations</p>
+        </footer>
+    </div>
+    
+    <script src="fields.js"></script>
+</body>
+</html>
