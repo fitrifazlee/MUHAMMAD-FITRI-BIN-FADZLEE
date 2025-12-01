@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIL - Spacetime Explorer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: #4fc3f7;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+        
+        .subtitle {
+            color: #b3e5fc;
+            font-size: 1.2em;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(79, 195, 247, 0.2);
+            border: 1px solid rgba(79, 195, 247, 0.4);
+            border-radius: 8px;
+            color: #b3e5fc;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(79, 195, 247, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 195, 247, 0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .canvas-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        #minkowskiCanvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .panel-title {
+            color: #4fc3f7;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4fc3f7;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.8);
+        }
+        
+        .event-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .coord-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            border-radius: 6px;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            background: rgba(79, 195, 247, 0.3);
+            border: 1px solid rgba(79, 195, 247, 0.5);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: rgba(79, 195, 247, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            grid-column: 1 / -1;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-item {
+            background: rgba(79, 195, 247, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4fc3f7;
+        }
+        
+        .info-label {
+            color: #b3e5fc;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: #fff59d;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #90a4ae;
+            font-size: 0.9em;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Relativity Interactive Lab</h1>
+            <div class="subtitle">Spacetime Explorer - Interactive Minkowski Diagram</div>
+            
+            <div class="nav">
+                <a href="#" class="nav-btn active">Spacetime</a>
+                <a href="#" class="nav-btn">Lorentz</a>
+                <a href="#" class="nav-btn">Fields</a>
+                <a href="#" class="nav-btn">Quiz</a>
+                <a href="#" class="nav-btn">Home</a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <h2 class="panel-title">Minkowski Spacetime Diagram</h2>
+                <div id="minkowskiCanvas"></div>
+                <p style="margin-top: 15px; color: #b3e5fc;">
+                    Drag the events (colored dots). Red lines show light cones (x = ±ct).
+                </p>
+            </div>
+            
+            <div class="controls-panel">
+                <h2 class="panel-title">Controls</h2>
+                
+                <div class="control-group">
+                    <h3>Velocity (β = v/c)</h3>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Rest Frame (0c)</span>
+                            <span id="velocityValue">0.00c</span>
+                            <span>Light Speed (1c)</span>
+                        </div>
+                        <input type="range" id="velocitySlider" min="0" max="0.99" step="0.01" value="0">
+                    </div>
+                    <p style="font-size: 0.9em; color: #b3e5fc; margin-top: 10px;">
+                        γ (Lorentz factor): <span id="gammaValue">1.00</span>
+                    </p>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Event Controls</h3>
+                    <div class="event-controls">
+                        <div>
+                            <label>Event A (Blue)</label>
+                            <input type="number" id="eventAx" class="coord-input" placeholder="x" value="2">
+                            <input type="number" id="eventAct" class="coord-input" placeholder="ct" value="3">
+                        </div>
+                        <div>
+                            <label>Event B (Green)</label>
+                            <input type="number" id="eventBx" class="coord-input" placeholder="x" value="4">
+                            <input type="number" id="eventBct" class="coord-input" placeholder="ct" value="1">
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-primary" id="updateEvents">Update Events</button>
+                        <button class="btn" id="addEvent">Add Event</button>
+                        <button class="btn btn-danger" id="clearEvents">Clear All</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Display Options</h3>
+                    <div style="margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 10px;">
+                            <input type="checkbox" id="showGrid" checked> Show Grid
+                        </label>
+                        <label style="display: block; margin-bottom: 10px;">
+                            <input type="checkbox" id="showLightCones" checked> Show Light Cones
+                        </label>
+                        <label style="display: block; margin-bottom: 10px;">
+                            <input type="checkbox" id="showTransformed" checked> Show Transformed Frame
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" id="calculateInterval">Calculate Interval</button>
+                    <button class="btn" id="resetView">Reset View</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2 class="panel-title">Physics Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Spacetime Interval (Δs²)</div>
+                    <div class="info-value" id="intervalValue">Calculating...</div>
+                    <div class="formula">Δs² = Δx² - c²Δt²</div>
+                    <div id="intervalType" style="color: #a5d6a7;">Spacelike</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Lorentz Transformation</div>
+                    <div class="formula">
+                        x' = γ(x - βct)<br>
+                        ct' = γ(ct - βx)
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <span id="transformInfo">Apply velocity to see transformed coordinates</span>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Active Events</div>
+                    <div class="info-value" id="eventCount">2 events</div>
+                    <div style="margin-top: 10px;">
+                        <div>Event A: (<span id="eventACoords">2, 3</span>)</div>
+                        <div>Event B: (<span id="eventBCoords">4, 1</span>)</div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Causality Check</div>
+                    <div id="causalityResult">Events are spacelike separated</div>
+                    <div style="margin-top: 10px; font-size: 0.9em;">
+                        • Timelike: Δs² < 0 (causally connected)<br>
+                        • Spacelike: Δs² > 0 (no causal connection)<br>
+                        • Lightlike: Δs² = 0 (on light cone)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Relativity Interactive Lab (RIL) | PHY4503 Assignment | Digital Transformation in Education</p>
+            <p>Use this tool to explore Special Relativity concepts interactively</p>
+        </footer>
+    </div>
+    
+    <script src="spacetime.js"></script>
+</body>
+</html>
