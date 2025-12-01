@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIL - Quiz & Concept Check</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-question-circle"></i> Relativity Interactive Lab</h1>
+            <div class="subtitle">Quiz & Concept Check - Test Your Understanding</div>
+            
+            <div class="nav">
+                <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+                <a href="spacetime.html" class="nav-btn"><i class="fas fa-project-diagram"></i> Spacetime</a>
+                <a href="lorentz.html" class="nav-btn"><i class="fas fa-exchange-alt"></i> Lorentz</a>
+                <a href="fields.html" class="nav-btn"><i class="fas fa-magnet"></i> Fields</a>
+                <a href="quiz.html" class="nav-btn active"><i class="fas fa-question-circle"></i> Quiz</a>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Quiz Selection Panel -->
+            <div class="canvas-container" id="quizSelectionPanel">
+                <h2 class="panel-title"><i class="fas fa-book-open"></i> Select Quiz Topic</h2>
+                <p style="text-align: center; color: #b3e5fc; margin-bottom: 30px;">
+                    Choose a topic to test your understanding of Special Relativity and Classical Field Theory
+                </p>
+                
+                <div class="module-grid">
+                    <div class="module-card quiz-topic" data-topic="timeDilation">
+                        <div class="module-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="module-title">Time Dilation</h3>
+                        <p class="module-desc">
+                            5 questions on time dilation, twin paradox, and proper time calculations.
+                        </p>
+                        <div class="btn btn-primary">Start Quiz</div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreTime">0%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card quiz-topic" data-topic="lengthContraction">
+                        <div class="module-icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <h3 class="module-title">Length Contraction</h3>
+                        <p class="module-desc">
+                            4 questions on Lorentz contraction, proper length, and measurement.
+                        </p>
+                        <div class="btn btn-primary">Start Quiz</div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreLength">0%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card quiz-topic" data-topic="lorentz">
+                        <div class="module-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3 class="module-title">Lorentz Transformations</h3>
+                        <p class="module-desc">
+                            6 questions on coordinate transformations and spacetime intervals.
+                        </p>
+                        <div class="btn btn-primary">Start Quiz</div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreLorentz">0%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card quiz-topic" data-topic="fields">
+                        <div class="module-icon">
+                            <i class="fas fa-magnet"></i>
+                        </div>
+                        <h3 class="module-title">Relativistic Fields</h3>
+                        <p class="module-desc">
+                            3 questions on electromagnetic field transformations.
+                        </p>
+                        <div class="btn btn-primary">Start Quiz</div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreFields">0%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card quiz-topic" data-topic="spacetime">
+                        <div class="module-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="module-title">Spacetime Intervals</h3>
+                        <p class="module-desc">
+                            4 questions on causality, light cones, and interval classification.
+                        </p>
+                        <div class="btn btn-primary">Start Quiz</div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreSpacetime">0%</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="background: rgba(64, 224, 208, 0.1);">
+                        <div class="module-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="module-title">Final Challenge</h3>
+                        <p class="module-desc">
+                            10 mixed questions covering all topics. Recommended after completing individual topics.
+                        </p>
+                        <div class="btn btn-success" id="finalChallengeBtn">
+                            <i class="fas fa-trophy"></i> Start Challenge
+                        </div>
+                        <div class="progress-info" style="margin-top: 15px;">
+                            <span>Best Score: <span id="scoreFinal">0%</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px;">
+                    <div class="btn-group">
+                        <button class="btn" id="practiceModeBtn">
+                            <i class="fas fa-graduation-cap"></i> Practice Mode
+                        </button>
+                        <button class="btn" id="reviewAllBtn">
+                            <i class="fas fa-book"></i> Review All Topics
+                        </button>
+                        <button class="btn btn-primary" id="viewProgressBtn">
+                            <i class="fas fa-chart-line"></i> View Progress
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quiz Interface (Initially Hidden) -->
+            <div class="canvas-container" id="quizInterface" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span id="quizTopicTitle">Time Dilation Quiz</span>
+                        <span id="quizProgress">Question 1 of 5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="quizProgressBar" style="width: 20%;"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Score: <span id="currentScore">0</span> points</span>
+                        <span>Time: <span id="quizTimer">02:30</span></span>
+                    </div>
+                </div>
+                
+                <div class="question-card" id="questionCard">
+                    <div class="question-text" id="questionText">
+                        Loading question...
+                    </div>
+                    
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- Options will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <div class="feedback-panel" id="feedbackPanel" style="display: none; margin-top: 30px; padding: 20px; background: rgba(64, 224, 208, 0.1); border-radius: 15px;">
+                        <h3 style="color: #40e0d0; margin-bottom: 15px;">
+                            <i class="fas fa-lightbulb"></i> Explanation
+                        </h3>
+                        <div id="feedbackText" style="color: #b3e5fc;">
+                            Feedback will appear here after answering
+                        </div>
+                        <div id="formulaExplanation" class="formula" style="margin-top: 15px; display: none;">
+                            Formula explanation
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn" id="hintBtn">
+                        <i class="fas fa-lightbulb"></i> Get Hint
+                    </button>
+                    <button class="btn" id="formulaBtn">
+                        <i class="fas fa-square-root-alt"></i> Show Formula
+                    </button>
+                    <button class="btn" id="prevQuestionBtn">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="nextQuestionBtn">
+                        Next Question <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-danger" id="quitQuizBtn">
+                        <i class="fas fa-sign-out-alt"></i> Quit Quiz
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Progress Report (Initially Hidden) -->
+            <div class="canvas-container" id="progressReport" style="display: none;">
+                <h2 class="panel-title"><i class="fas fa-chart-line"></i> Your Progress Report</h2>
+                
+                <div class="info-grid" style="margin-top: 30px;">
+                    <div class="info-item">
+                        <div class="info-label">Overall Score</div>
+                        <div class="info-value" id="overallScore">0%</div>
+                        <div class="progress-bar" style="margin: 15px 0;">
+                            <div class="progress-fill" id="overallProgressBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Questions Answered</div>
+                        <div class="info-value" id="questionsAnswered">0</div>
+                        <div style="margin-top: 10px;">
+                            <span id="correctAnswers">0 correct</span> | 
+                            <span id="incorrectAnswers">0 incorrect</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Time Spent Learning</div>
+                        <div class="info-value" id="timeSpent">0 min</div>
+                        <div style="margin-top: 10px;">
+                            <span id="avgTimePerQuestion">0 sec/question</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Topic Mastery</div>
+                        <div class="info-value">Beginner</div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">
+                            Complete more quizzes to reach Intermediate level
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="color: #40e0d0; margin: 30px 0 15px 0;">Topic-wise Performance</h3>
+                <div id="topicPerformance">
+                    <!-- Topic performance bars will be inserted here -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn btn-primary" id="backToTopicsBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Topics
+                    </button>
+                    <button class="btn" id="exportReportBtn">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                    <button class="btn btn-success" id="certificateBtn">
+                        <i class="fas fa-award"></i> View Certificate
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Reference Panel -->
+        <div class="info-panel">
+            <h2 class="panel-title"><i class="fas fa-book"></i> Quick Reference Formulas</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Time Dilation</div>
+                    <div class="formula">
+                        Δt = Δt₀/√(1 - v²/c²)<br>
+                        Δt₀ = proper time
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Length Contraction</div>
+                    <div class="formula">
+                        L = L₀√(1 - v²/c²)<br>
+                        L₀ = proper length
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Lorentz Transformation</div>
+                    <div class="formula">
+                        x' = γ(x - vt)<br>
+                        t' = γ(t - vx/c²)<br>
+                        γ = 1/√(1 - v²/c²)
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Spacetime Interval</div>
+                    <div class="formula">
+                        Δs² = Δx² - c²Δt²<br>
+                        • Δs² < 0: timelike<br>
+                        • Δs² > 0: spacelike<br>
+                        • Δs² = 0: lightlike
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <div class="btn-group">
+                    <button class="btn" id="cheatSheetBtn">
+                        <i class="fas fa-file-alt"></i> Download Cheat Sheet
+                    </button>
+                    <button class="btn" id="videoTutorialsBtn">
+                        <i class="fas fa-video"></i> Video Tutorials
+                    </button>
+                    <button class="btn btn-primary" id="simulationHelpBtn">
+                        <i class="fas fa-question-circle"></i> Need Help? Use Simulations
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><i class="fas fa-question-circle"></i> Quiz & Concept Check Module | Part of Relativity Interactive Lab</p>
+            <p style="margin-top: 10px;">Test your understanding and track your progress in learning Special Relativity</p>
+        </footer>
+    </div>
+    
+    <script src="quiz.js"></script>
+</body>
+</html>
