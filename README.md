@@ -3,7 +3,7 @@
 A digital learning tool for Special Relativity and Classical Field Theory, created for the I-PICTL Innovation Carnival at Universiti Putra Malaysia.
 
 ## 🚀 Live Demo
-[Click here to launch the interactive lab]([https://fttrifazlee.github.io/relativity-lab/](https://fitrifazlee.github.io/MUHAMMAD-FITRI-BIN-FADZLEE/))
+[Click here to launch the interactive lab](https://fitrifazlee.github.io/MUHAMMAD-FITRI-BIN-FADZLEE/)
 
 ## 📋 Features
 - **Spacetime Explorer**: Interactive Minkowski diagrams
