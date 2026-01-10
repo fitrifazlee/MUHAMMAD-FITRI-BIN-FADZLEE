@@ -40,7 +40,7 @@ relativity-lab/
 **Course**: PHY4503 - Special Relativity & Classical Field Theory  
 **Theme**: Digital Transformation in Education for Future Readiness  
 **Institution**: Universiti Putra Malaysia  
-**Author**: [Your Name]
+**Author**: MUHAMMAD FITRI BIN FADZLEE
 
 ## 🔗 Quick Links
 - [Technical Report](#)
