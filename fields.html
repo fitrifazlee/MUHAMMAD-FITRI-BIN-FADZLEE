@@ -4,55 +4,317 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIL - Field Visualizer</title>
-    <link rel="stylesheet" href="fields.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        /* Global CSS styles that can be integrated into existing styles.css */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f56565;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --info: #4299e1;
+            --dark: #1a202c;
+            --darker: #0d1b2a;
+            --light: #f7fafc;
+            --gray: #a0aec0;
+            --electric: #ff5722;
+            --magnetic: #2196f3;
+            --positive: #f44336;
+            --negative: #2196f3;
+        }
+        
+        .field-visualizer {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #1a1f2e 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .canvas-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-group h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--gray);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .slider-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--success);
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+        
+        .formula-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .formula-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--info);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .notification.info {
+            background: var(--info);
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-panel {
+                max-height: none;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="field-visualizer">
     <div class="container">
         <header>
-            <h1><i class="fas fa-magnet"></i> Relativity Interactive Lab</h1>
-            <div class="subtitle">Field Visualizer - Electric & Magnetic Field Simulations</div>
+            <h1 class="main-title"><i class="fas fa-magnet"></i> Field Visualizer</h1>
+            <div class="subtitle">Electromagnetic Field Simulations with Relativistic Transformations</div>
             
             <div class="nav">
-                <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
-                <a href="spacetime.html" class="nav-btn"><i class="fas fa-project-diagram"></i> Spacetime</a>
-                <a href="lorentz.html" class="nav-btn"><i class="fas fa-exchange-alt"></i> Lorentz</a>
-                <a href="fields.html" class="nav-btn active"><i class="fas fa-magnet"></i> Fields</a>
-                <a href="quiz.html" class="nav-btn"><i class="fas fa-question-circle"></i> Quiz</a>
+                <a href="index.html" class="btn btn-secondary"><i class="fas fa-home"></i> Home</a>
+                <a href="spacetime.html" class="btn btn-secondary"><i class="fas fa-project-diagram"></i> Spacetime</a>
+                <a href="lorentz.html" class="btn btn-secondary"><i class="fas fa-exchange-alt"></i> Lorentz</a>
+                <a href="fields.html" class="btn"><i class="fas fa-magnet"></i> Fields</a>
+                <a href="quiz.html" class="btn btn-secondary"><i class="fas fa-question-circle"></i> Quiz</a>
             </div>
         </header>
 
         <div class="main-content">
             <div class="canvas-container">
-                <div class="canvas-header">
-                    <h2 class="panel-title"><i class="fas fa-bolt"></i> Field Visualization</h2>
-                    <div class="mouse-position" id="mousePosition">(0.00, 0.00)</div>
-                </div>
+                <h2 class="panel-title"><i class="fas fa-bolt"></i> Field Visualization</h2>
                 <div id="fieldCanvas"></div>
                 
-                <div class="canvas-controls">
-                    <div class="btn-group">
-                        <button class="btn" id="playPauseBtn">
-                            <i class="fas fa-play"></i> Play
-                        </button>
-                        <button class="btn" id="resetBtn">
-                            <i class="fas fa-redo"></i> Reset
-                        </button>
-                        <button class="btn" id="snapshotBtn">
-                            <i class="fas fa-camera"></i> Snapshot
-                        </button>
-                    </div>
-                    
-                    <div class="selected-point-info" id="selectedPointInfo" style="display: none;">
-                        <div class="selected-point-header">
-                            <i class="fas fa-crosshairs"></i> Selected Point
-                            <button class="clear-btn" id="clearSelectedBtn">Clear</button>
-                        </div>
-                        <div class="selected-point-details">
-                            Coordinates: <span id="selectedCoords">(0.00, 0.00)</span>
-                        </div>
-                    </div>
+                <div class="btn-group">
+                    <button class="btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                        <span>Play</span>
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i>
+                        <span>Reset</span>
+                    </button>
+                    <button class="btn btn-secondary" id="snapshotBtn">
+                        <i class="fas fa-camera"></i>
+                        <span>Snapshot</span>
+                    </button>
                 </div>
             </div>
             
@@ -60,25 +322,21 @@
                 <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Controls</h2>
                 
                 <div class="control-group">
-                    <h3><i class="fas fa-cube"></i> Scenario Selection</h3>
-                    <select id="scenarioSelect" class="select-input">
+                    <h3><i class="fas fa-cube"></i> Simulation Scenario</h3>
+                    <select id="scenarioSelect" class="coord-input">
                         <option value="stationary">Stationary Point Charge</option>
-                        <option value="moving">Moving Charge (Constant Velocity)</option>
+                        <option value="moving">Moving Charge (Constant v)</option>
                         <option value="dipole">Electric Dipole</option>
-                        <option value="twoCharges">Two Similar Charges</option>
-                        <option value="quadrupole">Quadrupole</option>
                         <option value="wire">Current-Carrying Wire</option>
+                        <option value="parallelPlates">Parallel Plates</option>
+                        <option value="relativistic">Relativistic Comparison</option>
                     </select>
-                    <div class="scenario-description" id="scenarioDescription">
-                        Select a scenario to visualize different electromagnetic field configurations.
-                    </div>
                 </div>
                 
-                <div class="control-group">
-                    <h3><i class="fas fa-cog"></i> Charge Properties</h3>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Charge (q)</label>
+                <div class="control-group" id="chargeControl">
+                    <h3><i class="fas fa-bolt"></i> Charge Properties</h3>
+                    <div class="slider-container">
+                        <label class="input-label">Charge Magnitude (±2e)</label>
                         <input type="range" id="chargeSlider" min="-2" max="2" step="0.1" value="1">
                         <div class="slider-label">
                             <span>-2e</span>
@@ -86,29 +344,42 @@
                             <span>+2e</span>
                         </div>
                     </div>
-                    
-                    <div class="input-group">
+                </div>
+                
+                <div class="control-group" id="velocityControl" style="display: none;">
+                    <h3><i class="fas fa-tachometer-alt"></i> Velocity Settings</h3>
+                    <div class="slider-container">
                         <label class="input-label">Velocity (v/c)</label>
                         <input type="range" id="velocitySlider" min="0" max="0.99" step="0.01" value="0">
                         <div class="slider-label">
                             <span>0c</span>
-                            <span id="velocityValue">0.00c</span>
+                            <span id="velocityValue">0.0% c</span>
                             <span>0.99c</span>
                         </div>
                     </div>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Position (x, y)</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" id="posX" class="coord-input" value="0" step="0.1" style="flex: 1;">
-                            <input type="number" id="posY" class="coord-input" value="0" step="0.1" style="flex: 1;">
+                    <div style="margin-top: 10px;">
+                        <label class="input-label">Direct Input (β = v/c):</label>
+                        <input type="number" id="velocityInput" min="-0.99" max="0.99" step="0.001" value="0">
+                    </div>
+                </div>
+                
+                <div class="control-group" id="positionControl">
+                    <h3><i class="fas fa-crosshairs"></i> Position</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="input-label">X Position</label>
+                            <input type="number" id="posX" value="0" step="0.1">
+                        </div>
+                        <div>
+                            <label class="input-label">Y Position</label>
+                            <input type="number" id="posY" value="0" step="0.1">
                         </div>
                     </div>
                 </div>
                 
                 <div class="control-group">
                     <h3><i class="fas fa-eye"></i> Display Options</h3>
-                    <div class="checkbox-grid">
+                    <div class="checkbox-group">
                         <label class="checkbox-item">
                             <input type="checkbox" id="showElectric" checked>
                             <span>Electric Field (E)</span>
@@ -130,146 +401,91 @@
                             <span>Grid</span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox" id="showTransformation">
-                            <span>Relativistic Effects</span>
+                            <input type="checkbox" id="showFieldStrength">
+                            <span>Field Strength Heatmap</span>
                         </label>
                     </div>
                 </div>
                 
                 <div class="control-group">
                     <h3><i class="fas fa-tachometer-alt"></i> Visualization Settings</h3>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Field Scale</label>
-                        <input type="range" id="fieldScaleSlider" min="1" max="10" step="1" value="5">
-                        <div class="slider-label">
-                            <span>Low</span>
-                            <span>Medium</span>
-                            <span>High</span>
-                        </div>
+                    <div class="slider-container">
+                        <label class="input-label">Field Scale: <span id="fieldScaleValue">5.0</span></label>
+                        <input type="range" id="fieldScaleSlider" min="1" max="10" step="0.5" value="5">
                     </div>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Number of Field Lines</label>
-                        <input type="range" id="fieldLinesSlider" min="10" max="50" step="5" value="20">
-                        <div class="slider-label">
-                            <span>Few</span>
-                            <span>Many</span>
-                        </div>
+                    <div class="slider-container">
+                        <label class="input-label">Field Lines: <span id="fieldLinesValue">20</span></label>
+                        <input type="range" id="fieldLinesSlider" min="8" max="50" step="2" value="20">
                     </div>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Simulation Quality</label>
-                        <select id="qualitySelect" class="select-input">
-                            <option value="1">Normal</option>
-                            <option value="2">High Quality</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <h3><i class="fas fa-mouse-pointer"></i> Interaction</h3>
-                    <p style="font-size: 0.9em; color: #94a3b8;">
-                        <i class="fas fa-info-circle"></i> Click on the canvas to select a point and view field values at that location.
-                    </p>
                 </div>
             </div>
         </div>
         
         <div class="info-panel">
             <h2 class="panel-title"><i class="fas fa-info-circle"></i> Field Information</h2>
-            
-            <div class="field-strength-display">
-                <div class="field-strength-item">
-                    <div class="field-label">
-                        <i class="fas fa-bolt" style="color: #ff5722;"></i>
-                        Electric Field
-                    </div>
-                    <div class="field-value" id="eFieldValue">0.00 N/C</div>
-                    <div class="field-formula">
-                        E = kq/r² (stationary)<br>
-                        E' = γ(E + v × B) (moving)
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Electric Field Strength (at 1m)</div>
+                    <div class="info-value" id="eFieldValue">0.00 N/C</div>
+                    <div class="formula">
+                        E = kq/r²<br>
+                        k = 8.99×10⁹ N·m²/C²
                     </div>
                 </div>
                 
-                <div class="field-strength-item">
-                    <div class="field-label">
-                        <i class="fas fa-magnet" style="color: #2196f3;"></i>
-                        Magnetic Field
-                    </div>
-                    <div class="field-value" id="bFieldValue">0.00 T</div>
-                    <div class="field-formula">
-                        B = (μ₀/4π) q(v × r̂)/r²<br>
-                        B' = γ(B - v × E/c²)
+                <div class="info-item">
+                    <div class="info-label">Magnetic Field Strength (at 1m)</div>
+                    <div class="info-value" id="bFieldValue">0.00 T</div>
+                    <div class="formula">
+                        B = (μ₀/4π)qv×r̂/r²<br>
+                        μ₀ = 4π×10⁻⁷ T·m/A
                     </div>
                 </div>
                 
-                <div class="field-strength-item">
-                    <div class="field-label">
-                        <i class="fas fa-atom" style="color: #ba55d3;"></i>
-                        Lorentz Factor
-                    </div>
-                    <div class="field-value" id="gammaValue">1.000</div>
-                    <div class="field-formula">
+                <div class="info-item">
+                    <div class="info-label">Lorentz Factor (γ)</div>
+                    <div class="info-value" id="gammaValue">1.000</div>
+                    <div class="formula">
                         γ = 1/√(1 - v²/c²)<br>
-                        Shows relativistic effects
+                        c = 3.00×10⁸ m/s
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Relativistic Effects</div>
+                    <div class="formula" style="font-size: 0.9rem; line-height: 1.6;">
+                        • E-field contracts perpendicular to motion<br>
+                        • B-field increases with velocity<br>
+                        • Field transforms mix E and B
                     </div>
                 </div>
             </div>
             
-            <div class="transformation-info" id="transformationInfo">
-                <strong>Field Transformations:</strong><br>
-                For v = 0: E = kq/r², B = 0<br>
-                For v > 0: Fields transform relativistically
-            </div>
-            
-            <div class="equations-section">
-                <h3><i class="fas fa-square-root-alt"></i> Field Equations</h3>
-                <div class="equation-grid">
-                    <div class="equation">
-                        <div class="equation-title">Maxwell's Equations</div>
-                        <div class="equation-content">
-                            ∇·E = ρ/ε₀<br>
-                            ∇·B = 0<br>
-                            ∇×E = -∂B/∂t<br>
-                            ∇×B = μ₀J + μ₀ε₀∂E/∂t
-                        </div>
-                    </div>
-                    
-                    <div class="equation">
-                        <div class="equation-title">Lorentz Force Law</div>
-                        <div class="equation-content">
-                            F = q(E + v × B)
-                        </div>
-                    </div>
-                    
-                    <div class="equation">
-                        <div class="equation-title">Relativistic Transformations</div>
-                        <div class="equation-content">
-                            E∥' = E∥<br>
-                            E⟂' = γ(E⟂ + v × B)<br>
-                            B∥' = B∥<br>
-                            B⟂' = γ(B⟂ - v × E/c²)
-                        </div>
-                    </div>
+            <div id="transformationFormulas">
+                <div class="formula-group">
+                    <div class="formula-title">Classical Fields:</div>
+                    <div class="formula">E = kq/r²</div>
+                    <div class="formula">B = (μ₀/4π) q(v × r̂)/r²</div>
                 </div>
             </div>
             
-            <div class="instructions">
-                <h3><i class="fas fa-lightbulb"></i> Instructions</h3>
-                <ul>
-                    <li>Select different scenarios from the dropdown menu</li>
-                    <li>Adjust charge magnitude (±2e) and velocity (0-0.99c)</li>
-                    <li>Toggle between field representations using checkboxes</li>
-                    <li>Click on the visualization to measure field values at specific points</li>
-                    <li>Observe relativistic effects when velocity approaches light speed</li>
-                </ul>
+            <div class="control-group" style="margin-top: 30px;">
+                <h3><i class="fas fa-calculator"></i> Maxwell's Equations</h3>
+                <div class="formula-group">
+                    <div class="formula">
+                        ∇·E = ρ/ε₀  ∇·B = 0<br>
+                        ∇×E = -∂B/∂t ∇×B = μ₀J + μ₀ε₀∂E/∂t
+                    </div>
+                    <div class="formula" style="margin-top: 15px;">
+                        Lorentz Force: F = q(E + v × B)
+                    </div>
+                </div>
             </div>
         </div>
 
         <footer>
-            <p><i class="fas fa-magnet"></i> Field Visualizer Module | Part of Relativity Interactive Lab</p>
-            <p style="margin-top: 10px;">Visualize electromagnetic fields for moving charges with relativistic transformations</p>
+            <p><i class="fas fa-magnet"></i> Field Visualizer Module | Electromagnetic Field Simulations with Relativity</p>
+            <p style="margin-top: 10px;">Visualize how electric and magnetic fields transform at relativistic speeds</p>
         </footer>
     </div>
     
