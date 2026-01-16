@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIL - Field Visualizer</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fields.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
@@ -25,19 +25,34 @@
 
         <div class="main-content">
             <div class="canvas-container">
-                <h2 class="panel-title"><i class="fas fa-bolt"></i> Field Visualization Canvas</h2>
-                <div id="fieldCanvas" style="text-align: center; margin: 20px 0;"></div>
+                <div class="canvas-header">
+                    <h2 class="panel-title"><i class="fas fa-bolt"></i> Field Visualization</h2>
+                    <div class="mouse-position" id="mousePosition">(0.00, 0.00)</div>
+                </div>
+                <div id="fieldCanvas"></div>
                 
-                <div class="btn-group">
-                    <button class="btn" id="playPauseBtn">
-                        <i class="fas fa-play"></i> Play/Pause
-                    </button>
-                    <button class="btn" id="resetBtn">
-                        <i class="fas fa-redo"></i> Reset
-                    </button>
-                    <button class="btn" id="snapshotBtn">
-                        <i class="fas fa-camera"></i> Take Snapshot
-                    </button>
+                <div class="canvas-controls">
+                    <div class="btn-group">
+                        <button class="btn" id="playPauseBtn">
+                            <i class="fas fa-play"></i> Play
+                        </button>
+                        <button class="btn" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button class="btn" id="snapshotBtn">
+                            <i class="fas fa-camera"></i> Snapshot
+                        </button>
+                    </div>
+                    
+                    <div class="selected-point-info" id="selectedPointInfo" style="display: none;">
+                        <div class="selected-point-header">
+                            <i class="fas fa-crosshairs"></i> Selected Point
+                            <button class="clear-btn" id="clearSelectedBtn">Clear</button>
+                        </div>
+                        <div class="selected-point-details">
+                            Coordinates: <span id="selectedCoords">(0.00, 0.00)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -46,14 +61,17 @@
                 
                 <div class="control-group">
                     <h3><i class="fas fa-cube"></i> Scenario Selection</h3>
-                    <select id="scenarioSelect" class="coord-input">
+                    <select id="scenarioSelect" class="select-input">
                         <option value="stationary">Stationary Point Charge</option>
                         <option value="moving">Moving Charge (Constant Velocity)</option>
-                        <option value="twoCharges">Two Charges (Same/Different)</option>
-                        <option value="wire">Current-Carrying Wire</option>
                         <option value="dipole">Electric Dipole</option>
-                        <option value="accelerating">Accelerating Charge</option>
+                        <option value="twoCharges">Two Similar Charges</option>
+                        <option value="quadrupole">Quadrupole</option>
+                        <option value="wire">Current-Carrying Wire</option>
                     </select>
+                    <div class="scenario-description" id="scenarioDescription">
+                        Select a scenario to visualize different electromagnetic field configurations.
+                    </div>
                 </div>
                 
                 <div class="control-group">
@@ -90,7 +108,7 @@
                 
                 <div class="control-group">
                     <h3><i class="fas fa-eye"></i> Display Options</h3>
-                    <div class="checkbox-group">
+                    <div class="checkbox-grid">
                         <label class="checkbox-item">
                             <input type="checkbox" id="showElectric" checked>
                             <span>Electric Field (E)</span>
@@ -111,11 +129,16 @@
                             <input type="checkbox" id="showGrid" checked>
                             <span>Grid</span>
                         </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showTransformation">
+                            <span>Relativistic Effects</span>
+                        </label>
                     </div>
                 </div>
                 
                 <div class="control-group">
-                    <h3><i class="fas fa-tachometer-alt"></i> Field Strength</h3>
+                    <h3><i class="fas fa-tachometer-alt"></i> Visualization Settings</h3>
+                    
                     <div class="input-group">
                         <label class="input-label">Field Scale</label>
                         <input type="range" id="fieldScaleSlider" min="1" max="10" step="1" value="5">
@@ -129,63 +152,118 @@
                     <div class="input-group">
                         <label class="input-label">Number of Field Lines</label>
                         <input type="range" id="fieldLinesSlider" min="10" max="50" step="5" value="20">
+                        <div class="slider-label">
+                            <span>Few</span>
+                            <span>Many</span>
+                        </div>
                     </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Simulation Quality</label>
+                        <select id="qualitySelect" class="select-input">
+                            <option value="1">Normal</option>
+                            <option value="2">High Quality</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3><i class="fas fa-mouse-pointer"></i> Interaction</h3>
+                    <p style="font-size: 0.9em; color: #94a3b8;">
+                        <i class="fas fa-info-circle"></i> Click on the canvas to select a point and view field values at that location.
+                    </p>
                 </div>
             </div>
         </div>
         
         <div class="info-panel">
             <h2 class="panel-title"><i class="fas fa-info-circle"></i> Field Information</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Electric Field Strength</div>
-                    <div class="info-value" id="eFieldValue">0.00 N/C</div>
-                    <div class="formula" style="font-size: 0.9em;">
+            
+            <div class="field-strength-display">
+                <div class="field-strength-item">
+                    <div class="field-label">
+                        <i class="fas fa-bolt" style="color: #ff5722;"></i>
+                        Electric Field
+                    </div>
+                    <div class="field-value" id="eFieldValue">0.00 N/C</div>
+                    <div class="field-formula">
                         E = kq/r² (stationary)<br>
                         E' = γ(E + v × B) (moving)
                     </div>
                 </div>
                 
-                <div class="info-item">
-                    <div class="info-label">Magnetic Field Strength</div>
-                    <div class="info-value" id="bFieldValue">0.00 T</div>
-                    <div class="formula" style="font-size: 0.9em;">
+                <div class="field-strength-item">
+                    <div class="field-label">
+                        <i class="fas fa-magnet" style="color: #2196f3;"></i>
+                        Magnetic Field
+                    </div>
+                    <div class="field-value" id="bFieldValue">0.00 T</div>
+                    <div class="field-formula">
                         B = (μ₀/4π) q(v × r̂)/r²<br>
                         B' = γ(B - v × E/c²)
                     </div>
                 </div>
                 
-                <div class="info-item">
-                    <div class="info-label">Lorentz Factor</div>
-                    <div class="info-value" id="gammaValue">1.00</div>
-                    <div class="formula" style="font-size: 0.9em;">
+                <div class="field-strength-item">
+                    <div class="field-label">
+                        <i class="fas fa-atom" style="color: #ba55d3;"></i>
+                        Lorentz Factor
+                    </div>
+                    <div class="field-value" id="gammaValue">1.000</div>
+                    <div class="field-formula">
                         γ = 1/√(1 - v²/c²)<br>
                         Shows relativistic effects
                     </div>
                 </div>
-                
-                <div class="info-item">
-                    <div class="info-label">Field Transformation</div>
-                    <div class="formula" style="font-size: 0.8em;">
-                        E∥' = E∥<br>
-                        E⟂' = γ(E⟂ + v × B)<br>
-                        B∥' = B∥<br>
-                        B⟂' = γ(B⟂ - v × E/c²)
+            </div>
+            
+            <div class="transformation-info" id="transformationInfo">
+                <strong>Field Transformations:</strong><br>
+                For v = 0: E = kq/r², B = 0<br>
+                For v > 0: Fields transform relativistically
+            </div>
+            
+            <div class="equations-section">
+                <h3><i class="fas fa-square-root-alt"></i> Field Equations</h3>
+                <div class="equation-grid">
+                    <div class="equation">
+                        <div class="equation-title">Maxwell's Equations</div>
+                        <div class="equation-content">
+                            ∇·E = ρ/ε₀<br>
+                            ∇·B = 0<br>
+                            ∇×E = -∂B/∂t<br>
+                            ∇×B = μ₀J + μ₀ε₀∂E/∂t
+                        </div>
+                    </div>
+                    
+                    <div class="equation">
+                        <div class="equation-title">Lorentz Force Law</div>
+                        <div class="equation-content">
+                            F = q(E + v × B)
+                        </div>
+                    </div>
+                    
+                    <div class="equation">
+                        <div class="equation-title">Relativistic Transformations</div>
+                        <div class="equation-content">
+                            E∥' = E∥<br>
+                            E⟂' = γ(E⟂ + v × B)<br>
+                            B∥' = B∥<br>
+                            B⟂' = γ(B⟂ - v × E/c²)
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="control-group" style="margin-top: 30px;">
-                <h3><i class="fas fa-history"></i> Field Equations</h3>
-                <div class="formula">
-                    Maxwell's Equations in Vacuum:<br>
-                    ∇·E = ρ/ε₀ ∇·B = 0<br>
-                    ∇×E = -∂B/∂t ∇×B = μ₀J + μ₀ε₀∂E/∂t
-                </div>
-                <div class="formula" style="margin-top: 15px;">
-                    Lorentz Force Law:<br>
-                    F = q(E + v × B)
-                </div>
+            <div class="instructions">
+                <h3><i class="fas fa-lightbulb"></i> Instructions</h3>
+                <ul>
+                    <li>Select different scenarios from the dropdown menu</li>
+                    <li>Adjust charge magnitude (±2e) and velocity (0-0.99c)</li>
+                    <li>Toggle between field representations using checkboxes</li>
+                    <li>Click on the visualization to measure field values at specific points</li>
+                    <li>Observe relativistic effects when velocity approaches light speed</li>
+                </ul>
             </div>
         </div>
 
